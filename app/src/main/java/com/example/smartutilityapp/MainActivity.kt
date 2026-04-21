@@ -8,6 +8,25 @@ package com.example.smartutilityapp
  * Description: Smart Utility App with async data, permissions, and navigation
  */
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -24,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // ✅ Async Data Fetch (Coroutine)
+        // Async Data Fetch (Coroutine)
         btnFetch.setOnClickListener {
 
             val input = etInput.text.toString()
@@ -47,12 +66,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ✅ Location Feature
+        // Location Feature
         btnLocation.setOnClickListener {
             getLocation(tvResult)
         }
 
-        // ✅ Navigation
+        // Navigation
         btnNext.setOnClickListener {
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("message", tvResult.text.toString())
