@@ -20,9 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-
+import com.google.android.gms.location.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
@@ -42,8 +40,8 @@ class MainActivity : AppCompatActivity() {
         val tvResult = findViewById<TextView>(R.id.tvResult)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        // Async Data Fetch (Coroutine)
+        
+        // Async Data Fetch
         btnFetch.setOnClickListener {
 
             val input = etInput.text.toString()
@@ -79,15 +77,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Simulated API
+    // Simulated API Call
     private suspend fun fetchData(): String {
         delay(2000)
         return "Data fetched successfully from server"
     }
 
-    // Location function
+    // LOCATION HANDLING
     private fun getLocation(tvResult: TextView) {
 
+        // Permission check
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -101,16 +100,30 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            2000
+        ).build()
+
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+
+                val location = result.lastLocation
+
                 if (location != null) {
                     tvResult.text = "Lat: ${location.latitude}, Lng: ${location.longitude}"
                 } else {
-                    tvResult.text = "Location not available"
+                    tvResult.text = "Getting location... please wait"
                 }
+
+                fusedLocationClient.removeLocationUpdates(this)
             }
-            .addOnFailureListener {
-                tvResult.text = "Failed to get location"
-            }
+        }
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            mainLooper
+        )
     }
 }
