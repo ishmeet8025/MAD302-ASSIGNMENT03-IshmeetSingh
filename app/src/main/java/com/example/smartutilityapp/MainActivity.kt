@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         val tvResult = findViewById<TextView>(R.id.tvResult)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        
+
         // Async Data Fetch
         btnFetch.setOnClickListener {
 
